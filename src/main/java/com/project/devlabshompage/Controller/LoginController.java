@@ -19,7 +19,7 @@ public class LoginController {
 
     @GetMapping("/")
     private @ResponseBody String test(){
-        return "시작페이지";
+        return "시작페이지!!";
     }
 
     @GetMapping("/loginForm")
