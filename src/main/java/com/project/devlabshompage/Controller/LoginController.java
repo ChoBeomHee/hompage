@@ -17,11 +17,6 @@ public class LoginController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @GetMapping("/")
-    private @ResponseBody String test(){
-        return "시작페이지!!";
-    }
-
     @GetMapping("/loginForm")
     private String loginform(){
         return "loginform";
