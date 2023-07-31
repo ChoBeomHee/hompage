@@ -10,18 +10,27 @@ package com.project.devlabshompage.config.auth;
 
 
 import com.project.devlabshompage.model.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
-public class PrincipalDetails implements UserDetails { // 유저 디테일의 인터페이스를 구현
-
+@Data
+public class PrincipalDetails implements UserDetails, OAuth2User { // 유저 디테일의 인터페이스를 구현
     private User user; // 콤포지션
 
     public PrincipalDetails(User user){
         this.user = user;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
     }
 
     @Override
@@ -33,7 +42,7 @@ public class PrincipalDetails implements UserDetails { // 유저 디테일의 �
                 return user.getRole();
             }
         });
-        return null;
+        return collection;
     }
 
     @Override
@@ -64,5 +73,10 @@ public class PrincipalDetails implements UserDetails { // 유저 디테일의 �
     @Override
     public boolean isEnabled() { // 휴면계정 전환
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 }
