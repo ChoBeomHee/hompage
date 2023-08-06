@@ -1,5 +1,6 @@
 package com.project.devlabshompage.model;
 
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -20,4 +21,19 @@ public class User {
     private String providerId;
     @CreationTimestamp
     private Timestamp creatDate;
+
+    @Builder
+    public User(String username, String password, String email, String role, String provider, String providerId, Timestamp creatDate) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.provider = provider;
+        this.providerId = providerId;
+        this.creatDate = creatDate;
+    }
+
+    public User() {
+
+    }
 }

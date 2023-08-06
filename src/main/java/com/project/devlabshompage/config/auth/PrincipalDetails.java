@@ -20,17 +20,31 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+// 프린시펄 디테일을 만든 이유
+// Authentication에는 UserDetail과 OAuth2User가 있는데 두가지 타입을 모두 받아내기 위함
+// 회원가입은 User 타입으로받음
+// 프린시펄디테일에서 impelmatation 하고 User Object를 품었음
+// 그러므로 유저디테일 -> 프린시펄 디테일 그런데 로그인 타입에 따라 달라짐
+// 오어스도 이제 유저 타입을 갖게됨
 @Data
 public class PrincipalDetails implements UserDetails, OAuth2User { // 유저 디테일의 인터페이스를 구현
     private User user; // 콤포지션
+    private Map<String, Object> attributes;
 
+    // 일반 로그인
     public PrincipalDetails(User user){
         this.user = user;
     }
 
+    // 오어스 로그인
+    public PrincipalDetails(User user, Map<String, Object> attributes){
+        this.user = user;
+        this.attributes = attributes;
+    }
+
     @Override
     public Map<String, Object> getAttributes() {
-        return null;
+        return attributes;
     }
 
     @Override
