@@ -25,6 +25,8 @@ public class PrincipalDetailService implements UserDetailsService {
         if(userEntity != null)
             return new PrincipalDetails(userEntity);
 
+        System.out.println("로그인 완료");
+
         return null;
     }
 }

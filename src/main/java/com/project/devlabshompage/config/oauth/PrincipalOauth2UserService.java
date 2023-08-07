@@ -2,14 +2,18 @@ package com.project.devlabshompage.config.oauth;
 
 import com.project.devlabshompage.Repository.UserRepository;
 import com.project.devlabshompage.config.auth.PrincipalDetails;
+import com.project.devlabshompage.config.oauth.provider.GoogleUserInfo;
+import com.project.devlabshompage.config.oauth.provider.NaverUserInfo;
+import com.project.devlabshompage.config.oauth.provider.OAuth2UserInfo;
 import com.project.devlabshompage.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 // 후처리 함수
 @Service
@@ -23,19 +27,23 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        System.out.println("get"+oAuth2User.getAttributes());
-
-        String provider = userRequest.getClientRegistration().getClientId(); // google
-        String providerId = oAuth2User.getAttribute("sub");
-        String username = provider+"_"+providerId;
+        OAuth2UserInfo oAuth2UserInfo = null;
+        if(userRequest.getClientRegistration().getRegistrationId().equals("google")){
+            oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+        }else if(userRequest.getClientRegistration().getRegistrationId().equals("naver")){
+            oAuth2UserInfo = new NaverUserInfo((Map<String, Object>) oAuth2User.getAttributes().get("response"));
+        }
+        String provider = oAuth2UserInfo.getProvider();
+        String providerId = oAuth2UserInfo.getProviderId();
+        String username = provider+"_"+oAuth2UserInfo.getProviderId();
         String password = "devlabs";
-        String email = oAuth2User.getAttribute("email");
+        String email = oAuth2UserInfo.getEmail();
         String role = "ROLE_USER";
 
         User userEntity = userRepository.findByUsername(username);
 
         if(userEntity == null){
-            System.out.println("최초의 구글 로그인");
+            System.out.println("최초의 oauth 로그인");
             userEntity = User.builder()
                     .username(username)
                     .password(password)
@@ -46,7 +54,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .build();
             userRepository.save(userEntity);
         }else{
-            System.out.println("구글로 회원가입 되어있는 아이디");
+            System.out.println("회원가입 되어있는 아이디");
         }
 
         return new PrincipalDetails(userEntity);
